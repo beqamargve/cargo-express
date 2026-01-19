@@ -6,67 +6,502 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUTOPORT PRO | პრემიუმ ავტო იმპორტი</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --font-main: 'Noto Sans Georgian', sans-serif;
-            --font-accent: 'Montserrat', sans-serif;
-            --primary: #191c30;
+            --bg-dark: #121521;
             --accent: #0ea5e9;
-        }
-        body {
-            font-family: var(--font-main);
-            background-color: #ffffff;
-            color: var(--primary);
-            scroll-behavior: smooth;
-        }
-        h1, h2, h3, h4, .font-accent {
-            font-family: var(--font-accent), var(--font-main);
-        }
-        .bg-primary { background-color: var(--primary); }
-        .text-primary { color: var(--primary); }
-        .border-primary { border-color: var(--primary); }
-        
-        .constrained-container {
-            max-width: 1280px; /* Increased to 7xl equivalent */
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-        }
-        
-        .section-padding {
-            padding-top: 6rem;
-            padding-bottom: 6rem;
+            --text-light: #f8fafc;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
+        body {
+            font-family: 'Noto Sans Georgian', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            margin: 0;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
-        ::-webkit-scrollbar-track {
-            background: #f8fafc;
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 900;
+            text-transform: uppercase;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
+
+        /* Hero Split Slider */
+        .hero-section {
+            height: 90vh;
+            display: flex;
+            background-color: var(--bg-dark);
+            overflow: hidden;
+            position: relative;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
+
+        .hero-text-side {
+            width: 55%;
+            padding: 0 5% 0 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+            background-color: var(--bg-dark);
         }
+
+        .hero-image-side {
+            width: 45%;
+            position: relative;
+            height: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-text-side { width: 100%; padding: 0 6%; }
+            .hero-image-side { display: none; }
+        }
+
+        .slide-content {
+            display: none;
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+
+        .slide-content.active {
+            display: block;
+        }
+
+        .slide-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .slide-img.active {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Partner Marquee */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .partners-track {
+            display: flex;
+            width: calc(250px * 14);
+            animation: marquee 30s linear infinite;
+        }
+
+        .partner-logo {
+            width: 250px;
+            padding: 0 50px;
+            filter: grayscale(1);
+            opacity: 0.4;
+            transition: 0.3s;
+        }
+
+        .partner-logo:hover {
+            filter: grayscale(0);
+            opacity: 1;
+        }
+
+        .calc-tab.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .service-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            border-color: var(--accent);
+        }
+
+        #videoModal, #contactModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        #videoModal.active, #contactModal.active { display: flex; }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3"
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0"
   }
 }
 </script>
 </head>
 <body>
-    <div id="root"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-6">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="ship" class="text-white w-6 h-6"></i>
+                </div>
+                <h1 class="text-xl font-black tracking-tighter text-white transition-colors" id="logoText">AUTOPORT<span class="text-sky-500">PRO</span></h1>
+            </a>
+            <div class="hidden md:flex items-center gap-10">
+                <a href="#home" class="nav-link text-[11px] font-bold uppercase tracking-widest text-white/70 hover:text-white transition-all">მთავარი</a>
+                <a href="#about" class="nav-link text-[11px] font-bold uppercase tracking-widest text-white/70 hover:text-white transition-all">ჩვენს შესახებ</a>
+                <a href="#services" class="nav-link text-[11px] font-bold uppercase tracking-widest text-white/70 hover:text-white transition-all">სერვისები</a>
+                <a href="#calculator" class="nav-link text-[11px] font-bold uppercase tracking-widest text-white/70 hover:text-white transition-all">მოსაკრებლები</a>
+                <button onclick="openContactModal()" class="bg-white text-slate-900 px-8 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-sky-500 hover:text-white transition-all">კონტაქტი</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Split Hero Slider -->
+    <section class="hero-section" id="home">
+        <div class="hero-text-side">
+            <div class="slide-content active" id="content-0">
+                <span class="text-sky-400 font-black tracking-[0.4em] text-[10px] uppercase mb-6 block">PREMIUM AUTO IMPORT</span>
+                <h2 class="text-5xl lg:text-7xl font-black text-white mb-8 leading-[1] tracking-tighter uppercase">ავტო იმპორტი <br> <span class="text-sky-500">ამერიკიდან</span></h2>
+                <p class="text-lg text-slate-400 mb-12 font-medium leading-relaxed max-w-xl">პირდაპირი წვდომა აშშ-ს წამყვან აუქციონებზე და უსაფრთხო გადაზიდვა საქართველომდე.</p>
+                <div class="flex items-center gap-6">
+                    <button class="px-10 py-5 bg-sky-500 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-white hover:text-slate-900 transition-all shadow-xl">დაიწყე ძიება</button>
+                    <button onclick="openVideo()" class="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-white hover:bg-sky-500 hover:border-sky-500 transition-all group">
+                        <i data-lucide="play" class="w-6 h-6 fill-current"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="slide-content" id="content-1">
+                <span class="text-sky-400 font-black tracking-[0.4em] text-[10px] uppercase mb-6 block">RELIABLE LOGISTICS</span>
+                <h2 class="text-5xl lg:text-7xl font-black text-white mb-8 leading-[1] tracking-tighter uppercase">უსაფრთხო <br> <span class="text-sky-500">გადაზიდვები</span></h2>
+                <p class="text-lg text-slate-400 mb-12 font-medium leading-relaxed max-w-xl">ყველაზე ხელმისაწვდომი ტარიფები საკონტეინერო გადაზიდვებზე ნებისმიერი პორტიდან საქართველომდე.</p>
+                <button onclick="openContactModal()" class="px-10 py-5 bg-white text-slate-900 rounded-full font-black text-xs uppercase tracking-widest hover:bg-sky-500 hover:text-white transition-all shadow-xl">დატოვე ნომერი</button>
+            </div>
+        </div>
+        <div class="hero-image-side">
+            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200" class="slide-img active" id="img-0">
+            <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=1200" class="slide-img" id="img-1">
+            <div class="absolute bottom-12 left-12 flex gap-4 z-20">
+                <button onclick="setSlide(0)" id="dot-0" class="h-1.5 w-16 bg-sky-500 rounded-full transition-all"></button>
+                <button onclick="setSlide(1)" id="dot-1" class="h-1.5 w-8 bg-white/20 rounded-full transition-all"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIN Search Floating -->
+    <div class="relative z-40 -mt-12 mb-32 max-w-5xl mx-auto px-6">
+        <div class="bg-white p-4 pl-10 rounded-[4rem] flex flex-col md:flex-row items-center gap-6 shadow-2xl border border-slate-100">
+            <div class="flex-1 w-full flex items-center gap-6">
+                <i data-lucide="search" class="text-sky-500 w-8 h-8"></i>
+                <div class="flex-1">
+                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">ავტომობილის ძებნა ვინ კოდით</label>
+                    <input type="text" placeholder="შეიყვანეთ 17-ნიშნა VIN..." class="w-full bg-transparent border-none p-0 text-xl font-black text-slate-900 placeholder:text-slate-200 outline-none uppercase">
+                </div>
+            </div>
+            <button class="w-full md:w-auto px-16 py-7 bg-sky-500 text-white rounded-[3rem] font-black text-[12px] uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl">ძიება</button>
+        </div>
+    </div>
+
+    <!-- About Us Section -->
+    <section id="about" class="py-40">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                <div class="relative">
+                    <div class="absolute -inset-6 bg-sky-500/10 blur-3xl rounded-full"></div>
+                    <div class="relative rounded-[3.5rem] overflow-hidden shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&q=80&w=1000" class="w-full h-[600px] object-cover" alt="Autoport Team">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                        <div class="absolute bottom-12 left-12">
+                            <h4 class="text-3xl font-black text-white uppercase tracking-tighter">10+ წელი ბაზარზე</h4>
+                            <p class="text-sky-400 font-bold uppercase tracking-widest text-xs mt-2">სანდოობა და ხარისხი</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-sky-500 font-black tracking-[0.4em] text-[10px] uppercase mb-8 block">ჩვენს შესახებ</span>
+                    <h2 class="text-4xl lg:text-6xl font-black uppercase tracking-tighter text-slate-900 mb-10 leading-[0.9]">თქვენი მეგზური <br> <span class="text-slate-300">ამერიკულ ბაზარზე</span></h2>
+                    <p class="text-lg text-slate-500 mb-12 font-medium leading-relaxed">
+                        AUTOPORT PRO არის ლიცენზირებული ლოჯისტიკური კომპანია, რომელიც წლებია უზრუნველყოფს ავტომობილების უსაფრთხო იმპორტს აშშ-დან საქართველომდე. ჩვენი გუნდი მუშაობს 24/7-ზე, რათა თქვენ მიიღოთ საუკეთესო სერვისი და გამჭვირვალე ტარიფები.
+                    </p>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="flex gap-4 items-start">
+                            <div class="w-10 h-10 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center shrink-0"><i data-lucide="award" class="w-5 h-5"></i></div>
+                            <div><h5 class="font-black text-sm uppercase">ლიცენზირებული</h5><p class="text-xs text-slate-400 mt-1">ოფიციალური წვდომა</p></div>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <div class="w-10 h-10 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center shrink-0"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+                            <div><h5 class="font-black text-sm uppercase">დაზღვეული</h5><p class="text-xs text-slate-400 mt-1">სრული გარანტია</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="py-40 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-24">
+                <span class="text-sky-500 font-black tracking-[0.4em] text-[10px] uppercase mb-4 block">ჩვენი სერვისები</span>
+                <h2 class="text-4xl lg:text-6xl font-black uppercase tracking-tighter text-slate-900 leading-none">რას გთავაზობთ?</h2>
+                <div class="w-20 h-1.5 bg-sky-500 mx-auto mt-8 rounded-full"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="service-card p-12 rounded-[3.5rem]">
+                    <div class="w-16 h-16 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center mb-10"><i data-lucide="zap" class="w-8 h-8"></i></div>
+                    <h3 class="text-xl font-black mb-6 uppercase tracking-tight">სპეც ფასები დილერებს</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-medium">ავტო-დილერებისთვის მოქმედებს ექსკლუზიური დაბალი ტარიფები და მინიმალური საკომისიო.</p>
+                </div>
+                <div class="service-card p-12 rounded-[3.5rem]">
+                    <div class="w-16 h-16 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center mb-10"><i data-lucide="shield" class="w-8 h-8"></i></div>
+                    <h3 class="text-xl font-black mb-6 uppercase tracking-tight">დაზღვეული ავტომობილები</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-medium">თითოეული ავტომობილი დაზღვეულია ტრანსპორტირების ყველა ეტაპზე ფოთის პორტამდე.</p>
+                </div>
+                <div class="service-card p-12 rounded-[3.5rem]">
+                    <div class="w-16 h-16 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center mb-10"><i data-lucide="lock" class="w-8 h-8"></i></div>
+                    <h3 class="text-xl font-black mb-6 uppercase tracking-tight">დახურული აუქციონები</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-medium">მიიღეთ წვდომა დახურულ ლოტებზე, რომლებიც არ ჩანს საჯარო ძიებისას.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section id="calculator" class="py-40">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+            <div class="lg:col-span-7">
+                <span class="text-sky-500 font-black tracking-[0.4em] text-[10px] uppercase mb-8 block">FEES CALCULATOR</span>
+                <h2 class="text-4xl lg:text-7xl font-black uppercase mb-12 tracking-tighter text-slate-900 leading-[0.9]">აუქციონის <br> <span class="text-slate-300">მოსაკრებლის გამოთვლა</span></h2>
+                <div class="bg-white rounded-[3.5rem] p-10 lg:p-16 border border-slate-100 shadow-xl">
+                    <div class="flex gap-4 mb-12">
+                        <button onclick="setAuction('copart')" id="btnCopart" class="calc-tab active flex-1 py-5 rounded-2xl border border-slate-100 font-black text-[11px] uppercase tracking-widest transition-all">COPART</button>
+                        <button onclick="setAuction('iaai')" id="btnIaai" class="calc-tab flex-1 py-5 rounded-2xl border border-slate-100 font-black text-[11px] uppercase tracking-widest transition-all">IAAI</button>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-black text-slate-400 mb-6 uppercase tracking-widest">ლოტის საბოლოო ფასი ($)</label>
+                        <div class="relative">
+                            <span class="absolute left-8 top-1/2 -translate-y-1/2 text-3xl font-black text-slate-200">$</span>
+                            <input type="number" id="bidPrice" value="5000" oninput="calculateFees()" class="w-full bg-slate-50 border border-slate-100 rounded-[2.5rem] px-16 py-8 text-4xl font-black text-slate-900 outline-none focus:border-sky-500 transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="lg:col-span-5 pt-12">
+                <div class="bg-[#121521] rounded-[3.5rem] p-12 lg:p-16 text-white shadow-2xl relative overflow-hidden">
+                    <h3 class="text-xl font-black mb-12 border-b border-white/10 pb-6 uppercase tracking-widest">ინვოისი</h3>
+                    <div class="space-y-6 mb-16">
+                        <div class="flex justify-between font-bold text-sm text-slate-400"><span>მოსაკრებელი (Buy Fee)</span><span class="text-white" id="buyFee">$0</span></div>
+                        <div class="flex justify-between font-bold text-sm text-slate-400"><span>ინტერნეტ მოსაკრებელი</span><span class="text-white" id="internetFee">$0</span></div>
+                        <div class="flex justify-between font-bold text-sm text-slate-400"><span>Gate/Doc მოსაკრებელი</span><span class="text-white">$79</span></div>
+                    </div>
+                    <div class="pt-12 border-t border-white/10">
+                        <span class="text-[10px] text-sky-400 font-black uppercase tracking-[0.3em] block mb-4">ჯამში გადასახდელი</span>
+                        <span class="text-6xl font-black tracking-tighter leading-none" id="totalFee">$5,750</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Carousel -->
+    <section id="partners" class="py-32 bg-white border-y border-slate-100 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 mb-20 text-center">
+            <span class="text-sky-500 font-black tracking-[0.4em] text-[10px] uppercase mb-4 block">GLOBAL CARRIERS</span>
+            <h2 class="text-3xl font-black uppercase tracking-widest text-slate-900 leading-none">ჩვენი პარტნიორები</h2>
+        </div>
+        <div class="partners-track">
+            <div class="partner-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Maersk_logo.svg/1280px-Maersk_logo.svg.png" class="h-10 object-contain"></div>
+            <div class="partner-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Mediterranean_Shipping_Company_logo.svg/2560px-Mediterranean_Shipping_Company_logo.svg.png" class="h-10 object-contain"></div>
+            <div class="partner-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Hapag-Lloyd_logo.svg/2560px-Hapag-Lloyd_logo.svg.png" class="h-10 object-contain"></div>
+            <div class="partner-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/CMA_CGM_logo.svg/2560px-CMA_CGM_logo.svg.png" class="h-10 object-contain"></div>
+            <div class="partner-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/COSCO_Shipping_logo.svg/1200px-COSCO_Shipping_logo.svg.png" class="h-10 object-contain"></div>
+            <div class="partner-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Ocean_Network_Express_logo.svg/2560px-Ocean_Network_Express_logo.svg.png" class="h-10 object-contain"></div>
+            <div class="partner-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Evergreen_Marine_Logo.svg/1200px-Evergreen_Marine_Logo.svg.png" class="h-10 object-contain"></div>
+        </div>
+    </section>
+
+    <!-- Contact Section (Updated: White Background, Split Layout) -->
+    <section id="contact" class="py-32 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-12">
+                <!-- Left Side: Text and Phone -->
+                <div class="text-center md:text-left">
+                    <span class="text-sky-500 font-black tracking-[0.4em] text-[10px] uppercase mb-4 block">კონსულტაცია</span>
+                    <h2 class="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-slate-900 mb-6">დაგვიკავშირდი</h2>
+                    <a href="tel:+995599000000" class="text-3xl lg:text-4xl font-black text-sky-500 hover:text-slate-900 transition-colors tracking-tighter inline-block">
+                        +995 599 000 000
+                    </a>
+                </div>
+                <!-- Right Side: Button -->
+                <div class="shrink-0">
+                    <button onclick="openContactModal()" class="px-12 py-7 bg-[#121521] text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-sky-500 transition-all shadow-xl active:scale-95">
+                        დატოვე მონაცემები
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f111a] pt-32 pb-16">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h1 class="text-3xl font-black text-white mb-10 tracking-tighter uppercase">AUTOPORT<span class="text-sky-500">PRO</span></h1>
+            <div class="flex justify-center gap-12 mb-16 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <a href="#home" class="hover:text-white transition-colors">მთავარი</a>
+                <a href="#about" class="hover:text-white transition-colors">ჩვენს შესახებ</a>
+                <a href="#services" class="hover:text-white transition-colors">სერვისები</a>
+            </div>
+            <p class="text-[10px] font-black text-slate-700 uppercase tracking-[0.5em]">&copy; 2024 AUTOPORT PRO GEORGIA</p>
+        </div>
+    </footer>
+
+    <!-- Video Modal -->
+    <div id="videoModal">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-[3rem] overflow-hidden shadow-2xl">
+            <button onclick="closeVideo()" class="absolute top-8 right-8 z-50 w-12 h-12 bg-white/20 hover:bg-sky-500 rounded-full flex items-center justify-center text-white transition-all">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <iframe id="videoPlayer" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Contact Popup Modal -->
+    <div id="contactModal">
+        <div class="bg-white rounded-[3.5rem] p-12 lg:p-16 w-full max-w-lg relative overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+            <button onclick="closeContactModal()" class="absolute top-8 right-8 w-12 h-12 flex items-center justify-center text-slate-300 hover:text-slate-900 transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            
+            <div id="contactFormContainer">
+                <h3 class="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tighter">დატოვეთ მონაცემები</h3>
+                <p class="text-slate-500 text-sm font-medium mb-10">ჩვენი მენეჯერი უმოკლეს დროში დაგიკავშირდებათ</p>
+                
+                <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">სახელი და გვარი</label>
+                        <input type="text" required class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-sky-500 transition-all font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">ტელეფონის ნომერი</label>
+                        <input type="tel" required class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-sky-500 transition-all font-bold" placeholder="5xx xx xx xx">
+                    </div>
+                    <button type="submit" class="w-full py-6 bg-sky-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#121521] transition-all shadow-xl">გაგზავნა</button>
+                </form>
+            </div>
+
+            <!-- Success Message (Initially Hidden) -->
+            <div id="successMessage" class="hidden text-center py-10">
+                <div class="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <i data-lucide="check-circle" class="w-10 h-10 text-green-500"></i>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 mb-6 uppercase tracking-tighter">წარმატებით გაიგზავნა!</h3>
+                <p class="text-slate-500 font-medium leading-relaxed">თქვენი მონაცემები წარმატებით გაიგზავნა, ჩვენ მალე დაგიკავშირდებით, მადლობა!</p>
+                <button onclick="closeContactModal()" class="mt-12 w-full py-6 bg-slate-100 text-slate-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">დახურვა</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Slider Logic
+        let currentSlide = 0;
+        const totalSlides = 2;
+        function setSlide(index) {
+            document.getElementById(`content-${currentSlide}`).classList.remove('active');
+            document.getElementById(`img-${currentSlide}`).classList.remove('active');
+            document.getElementById(`dot-${currentSlide}`).classList.remove('w-16', 'bg-sky-500');
+            document.getElementById(`dot-${currentSlide}`).classList.add('w-8', 'bg-white/20');
+            currentSlide = index;
+            document.getElementById(`content-${currentSlide}`).classList.add('active');
+            document.getElementById(`img-${currentSlide}`).classList.add('active');
+            document.getElementById(`dot-${currentSlide}`).classList.remove('w-8', 'bg-white/20');
+            document.getElementById(`dot-${currentSlide}`).classList.add('w-16', 'bg-sky-500');
+        }
+        setInterval(() => setSlide((currentSlide + 1) % totalSlides), 8000);
+
+        // Video Control
+        function openVideo() {
+            document.getElementById('videoModal').classList.add('active');
+            document.getElementById('videoPlayer').src = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1";
+        }
+        function closeVideo() {
+            document.getElementById('videoModal').classList.remove('active');
+            document.getElementById('videoPlayer').src = "";
+        }
+
+        // Contact Modal Control
+        function openContactModal() {
+            document.getElementById('contactModal').classList.add('active');
+            document.getElementById('contactFormContainer').classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('active');
+        }
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            // Show success message
+            document.getElementById('contactFormContainer').classList.add('hidden');
+            document.getElementById('successMessage').classList.remove('hidden');
+            lucide.createIcons(); // Refresh icons for the success message
+        }
+
+        // Calculator Logic
+        let selectedAuction = 'copart';
+        function setAuction(auction) {
+            selectedAuction = auction;
+            document.querySelectorAll('.calc-tab').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn${auction.charAt(0).toUpperCase() + auction.slice(1)}`).classList.add('active');
+            calculateFees();
+        }
+
+        function calculateFees() {
+            const price = parseFloat(document.getElementById('bidPrice').value) || 0;
+            let buyFee = 0, internetFee = 0, gateFee = 79;
+            if (selectedAuction === 'copart') {
+                if (price < 500) buyFee = 150; else if (price < 1000) buyFee = 250; else if (price < 3000) buyFee = 450; else if (price < 5000) buyFee = 650; else buyFee = price * 0.15;
+                internetFee = price < 5000 ? 89 : 129;
+            } else {
+                if (price < 500) buyFee = 120; else if (price < 1000) buyFee = 220; else if (price < 3000) buyFee = 420; else if (price < 5000) buyFee = 620; else buyFee = price * 0.14;
+                internetFee = price < 5000 ? 79 : 119;
+            }
+            const total = price + buyFee + internetFee + gateFee;
+            document.getElementById('buyFee').innerText = `$${Math.round(buyFee)}`;
+            document.getElementById('internetFee').innerText = `$${Math.round(internetFee)}`;
+            document.getElementById('totalFee').innerText = `$${Math.round(total).toLocaleString()}`;
+        }
+
+        window.onscroll = () => {
+            const nav = document.getElementById('navbar');
+            const logoText = document.getElementById('logoText');
+            if (window.scrollY > 80) {
+                nav.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-4', 'border-b', 'border-slate-100');
+                logoText.classList.replace('text-white', 'text-slate-900');
+            } else {
+                nav.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-4', 'border-b', 'border-slate-100');
+                logoText.classList.replace('text-slate-900', 'text-white');
+            }
+        };
+
+        calculateFees();
+    </script>
 </body>
 </html>
